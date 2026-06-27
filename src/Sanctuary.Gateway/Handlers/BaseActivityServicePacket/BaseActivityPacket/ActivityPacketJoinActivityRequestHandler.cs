@@ -112,6 +112,156 @@ public static class ActivityPacketJoinActivityRequestHandler
 
             connection.SendTunneled(miniGameInfoPacket);
         }
+        // Kart Racing (Wildwood 62, Frost Ridge 63, Tangletrack 64)
+        else if (packet.ActivityId is 62 or 63 or 64)
+        {
+            var miniGameInfo = new MiniGameInfo()
+            {
+                NameId = clientActivityDefinition.DisplayNameId,
+                IconId = clientActivityDefinition.ImageSetId,
+                DescriptionId = clientActivityDefinition.DisplayDescriptionId,
+                Difficulty = clientActivityDefinition.Difficulty,
+                ProfileType = 48, // Kart Driver
+                Type = 10, // Racing
+                PreselectedGameId = packet.ActivityId,
+                ShowStarCounter = true
+            };
+
+            var miniGameGroupInfo = new MiniGameGroupInfo()
+            {
+                Id = 69,
+                NameId = clientActivityDefinition.DisplayNameId,
+                DescriptionId = clientActivityDefinition.DisplayDescriptionId,
+                IconId = clientActivityDefinition.ImageSetId
+            };
+
+            using var writer = new PacketWriter();
+
+            miniGameInfo.Serialize(writer);
+
+            writer.Write(0); // Unused
+            writer.Write(0); // Unused
+
+            writer.Write(miniGameGroupInfo.Serialize());
+
+            var clientActivityLaunchPacketInviteDetails = new ClientActivityLaunchPacketInviteDetails(packet.ActivityId, 0)
+            {
+                Guid = connection.Player.Guid,
+                Inviter = "Test",
+                Members =
+                {
+                    new()
+                    {
+                        Id = 1,
+                        Guid = connection.Player.Guid,
+                        InviteStatus = 2,
+                        IsFoundingMember = true
+                    }
+                },
+                Request =
+                {
+                    RequestorGuid = connection.Player.Guid,
+                    SysHashkey = JenkinsHelper.OneAtATimeHash("Minigame"),
+                    ReqId = 69420,
+                    MinMembers = 1,
+                    MaxMembers = 1,
+                    ImageSetId = clientActivityDefinition.ImageSetId,
+                    NameStringId = clientActivityDefinition.DisplayNameId,
+                    DescStringId = clientActivityDefinition.DisplayDescriptionId,
+                    SysSpecificData = writer.Buffer
+                }
+            };
+
+            connection.SendTunneled(clientActivityLaunchPacketInviteDetails);
+
+            var clientActivityLaunchPacketActivityLaunched = new ClientActivityLaunchPacketActivityLaunched(packet.ActivityId, 0);
+
+            clientActivityLaunchPacketActivityLaunched.Guids.Add(connection.Player.Guid);
+
+            connection.SendTunneled(clientActivityLaunchPacketActivityLaunched);
+
+            var miniGameInfoPacket = new MiniGameInfoPacket(packet.ActivityId, -1, -1)
+            {
+                Info = miniGameInfo
+            };
+
+            connection.SendTunneled(miniGameInfoPacket);
+        }
+        // Demo Derby (Wildwood 65, Frost Ridge 66, Tangletrack 67)
+        else if (packet.ActivityId is 65 or 66 or 67)
+        {
+            var miniGameInfo = new MiniGameInfo()
+            {
+                NameId = clientActivityDefinition.DisplayNameId,
+                IconId = clientActivityDefinition.ImageSetId,
+                DescriptionId = clientActivityDefinition.DisplayDescriptionId,
+                Difficulty = clientActivityDefinition.Difficulty,
+                ProfileType = 49, // Demo Derby Driver
+                Type = 11, // Demo Derby
+                PreselectedGameId = packet.ActivityId,
+                ShowStarCounter = true
+            };
+
+            var miniGameGroupInfo = new MiniGameGroupInfo()
+            {
+                Id = 69,
+                NameId = clientActivityDefinition.DisplayNameId,
+                DescriptionId = clientActivityDefinition.DisplayDescriptionId,
+                IconId = clientActivityDefinition.ImageSetId
+            };
+
+            using var writer = new PacketWriter();
+
+            miniGameInfo.Serialize(writer);
+
+            writer.Write(0);
+            writer.Write(0);
+
+            writer.Write(miniGameGroupInfo.Serialize());
+
+            var clientActivityLaunchPacketInviteDetails = new ClientActivityLaunchPacketInviteDetails(packet.ActivityId, 0)
+            {
+                Guid = connection.Player.Guid,
+                Inviter = "Test",
+                Members =
+                {
+                    new()
+                    {
+                        Id = 1,
+                        Guid = connection.Player.Guid,
+                        InviteStatus = 2,
+                        IsFoundingMember = true
+                    }
+                },
+                Request =
+                {
+                    RequestorGuid = connection.Player.Guid,
+                    SysHashkey = JenkinsHelper.OneAtATimeHash("Minigame"),
+                    ReqId = 69420,
+                    MinMembers = 1,
+                    MaxMembers = 1,
+                    ImageSetId = clientActivityDefinition.ImageSetId,
+                    NameStringId = clientActivityDefinition.DisplayNameId,
+                    DescStringId = clientActivityDefinition.DisplayDescriptionId,
+                    SysSpecificData = writer.Buffer
+                }
+            };
+
+            connection.SendTunneled(clientActivityLaunchPacketInviteDetails);
+
+            var clientActivityLaunchPacketActivityLaunched = new ClientActivityLaunchPacketActivityLaunched(packet.ActivityId, 0);
+
+            clientActivityLaunchPacketActivityLaunched.Guids.Add(connection.Player.Guid);
+
+            connection.SendTunneled(clientActivityLaunchPacketActivityLaunched);
+
+            var miniGameInfoPacket = new MiniGameInfoPacket(packet.ActivityId, -1, -1)
+            {
+                Info = miniGameInfo
+            };
+
+            connection.SendTunneled(miniGameInfoPacket);
+        }
         // Mining Practice
         else if (packet.ActivityId == 1113)
         {

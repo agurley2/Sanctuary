@@ -105,7 +105,7 @@ builder.ConfigureLogging((hostBuilderContext, loggingBuilder) =>
     loggingBuilder.ClearProviders();
 
 #if DEBUG
-    loggingBuilder.SetMinimumLevel(LogLevel.Debug);
+    loggingBuilder.SetMinimumLevel(LogLevel.Trace);
 #endif
 
     var nlogConfigFile = hostBuilderContext.HostingEnvironment.IsDevelopment()
