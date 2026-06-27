@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 
+using Sanctuary.Core.Collections;
 using Sanctuary.Core.IO;
 using Sanctuary.Game.Interactions;
 using Sanctuary.Game.Zones;
@@ -42,10 +43,14 @@ public sealed class Player : ClientPcData, IEntity
     public List<FriendData> Friends { get; set; } = [];
     public List<IgnoreData> Ignores { get; set; } = [];
 
+    public ConcurrentSet<ulong> IncomingFriendRequests { get; } = [];
+
     public ConcurrentDictionary<ChatChannel, bool> ChatChannelStatus { get; set; } = [];
 
     public int StationCash { get; set; }
     public List<CoinStoreTransactionRecord> CoinStoreTransactions { get; set; } = [];
+
+    public int TimezoneOffset { get; set; }
 
     public Vector4 StartingZonePosition { get; set; }
     public Quaternion StartingZoneRotation { get; set; }

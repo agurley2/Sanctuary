@@ -132,6 +132,9 @@ namespace Sanctuary.Database.Sqlite.Migrations
                     b.Property<int?>("ModelCustomizationId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("PlayTime")
+                        .HasColumnType("INTEGER");
+
                     b.Property<float?>("PositionX")
                         .HasColumnType("REAL");
 
