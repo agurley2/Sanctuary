@@ -65,8 +65,6 @@ public static class PacketTunneledClientPacketHandler
             MountBasePacket.OpCode => MountBasePacketHandler.HandlePacket(connection, reader),
             PacketClientInitializationDetails.OpCode => PacketClientInitializationDetailsHandler.HandlePacket(connection, packet.Payload),
             BaseNameChangePacket.OpCode => BaseNameChangePacketHandler.HandlePacket(connection, reader),
-            BaseVehicleRacePacket.OpCode => BaseVehicleRacePacketHandler.HandlePacket(connection, reader),
-            BaseVehicleDemolitionDerbyPacket.OpCode => BaseVehicleDemolitionDerbyPacketHandler.HandlePacket(connection, reader),
             _ => false
         };
 

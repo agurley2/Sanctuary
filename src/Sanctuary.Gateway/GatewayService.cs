@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Options;
 using Sanctuary.Core.Configuration;
 using Sanctuary.Database;
 using Sanctuary.Game;
-using Sanctuary.Packet;
 using Sanctuary.Packet.Common.Extensions;
 using Sanctuary.UdpLibrary.Enumerations;
 
@@ -124,72 +122,6 @@ public class GatewayService : BackgroundService
         _logger.LogInformation($"{nameof(GatewayServer)} started and is listening on port '{_options.Port}'.");
 
         _server.OnStarted();
-
-        // Console commands for testing.
-        _ = Task.Run(() =>
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                var input = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(input))
-                    continue;
-
-                var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                if (parts[0] == "/bubble" && parts.Length >= 3)
-                {
-                    var name = parts[1];
-                    if (int.TryParse(parts[2], out var size))
-                    {
-                        if (!_zoneManager.TryGetPlayer(name, out var player))
-                        {
-                            _logger.LogWarning("Player '{name}' not found.", name);
-                            continue;
-                        }
-
-                        player.ChatBubbleSize = size;
-
-                        var packet = new CommandPacketSetChatBubbleColor
-                        {
-                            ChatBubbleForegroundColor = player.ChatBubbleForegroundColor,
-                            ChatBubbleBackgroundColor = player.ChatBubbleBackgroundColor,
-                            ChatBubbleSize = size,
-                            Guid = player.Guid
-                        };
-
-                        player.SendTunneledToVisible(packet);
-
-                        _logger.LogInformation("Set {player}'s ChatBubbleSize to {size} and broadcast to {count} visible players.",
-                            player.Name, size, player.VisiblePlayers.Count);
-                    }
-                }
-                else if (parts[0] == "/model" && parts.Length >= 3)
-                {
-                    var name = parts[1];
-                    if (int.TryParse(parts[2], out var modelId))
-                    {
-                        if (!_zoneManager.TryGetPlayer(name, out var player))
-                        {
-                            _logger.LogWarning("Player '{name}' not found.", name);
-                            continue;
-                        }
-
-                        player.Model = modelId;
-
-                        // Force re-broadcast: remove from all visible lists, then re-add
-                        var visiblePlayers = player.VisiblePlayers.Values.ToList();
-                        foreach (var vp in visiblePlayers)
-                        {
-                            vp.OnRemoveVisiblePlayers(player);
-                            vp.OnAddVisiblePlayers(player);
-                        }
-
-                        _logger.LogInformation("Changed {player}'s model to {model} for {count} visible players.",
-                            player.Name, modelId, visiblePlayers.Count);
-                    }
-                }
-            }
-        }, cancellationToken);
 
         // Main server loop.
         while (!cancellationToken.IsCancellationRequested && clientConnection.Status != Status.Disconnected)
